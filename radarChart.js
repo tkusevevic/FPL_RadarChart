@@ -99,7 +99,7 @@ function RadarChart(id, data, options) {
      .attr("dy", "0.4em")
      .style("font-size", "15px")
      .attr("fill", "#737373")
-     .text(function(d,i) { return Format(maxValue * d/cfg.levels); });
+     .text(function(d,i) { return Format((maxValue * d/cfg.levels).toFixed(2)); });
 
   /////////////////////////////////////////////////////////
   //////////////////// Draw the axes //////////////////////
