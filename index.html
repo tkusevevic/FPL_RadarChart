@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
+	<title>FPL Radar Chart</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+
+	<style>
+		body {
+			font-size: 11px;
+			font-weight: 300;
+			fill: #242424;
+			text-align: center;
+			cursor: default;
+		}
+
+		ul {
+			margin-top: 500px;
+			background-color: #000000;
+			display: inline-block;
+			list-style-type: none;
+		}
+
+
+		li {
+			color: #FFFFFF;
+		}
+
+		.name2 {
+			text-align:left;
+			float:right;
+			margin-right: 150px;
+			color: #00A0B0;
+		}
+
+		.name1 {
+			text-align:right;
+			float:left;
+			color: #CC333F;
+			margin-left: 225px;
+		}
+
+
+		.legend {
+			font-family: 'Raleway', sans-serif;
+			fill: #333333;
+			font-size: 21px;
+		}
+
+		.tooltip {
+			fill: #333333;
+			font-size: 21px;
+		}
+
+		.teams {
+			font-size: 11px;
+			font-weight: 300;
+			text-align: left;
+			color: #FFFFFF;
+			cursor: default;
+			font-size: 21px;
+		}
+
+		.radarChart {
+			position: absolute;
+			left: 30%;
+			padding: 30;
+		}
+
+		.players {
+			font-family: 'Open Sans', sans-serif;
+			font-size: 11px;
+			font-weight: 300;
+			color: #FFFFFF;
+			text-align: center;
+			cursor: default;
+			font-size: 14px;
+		}
+
+		.cointainer {
+			flex-wrap: wrap;
+		}
+
+		.images {
+			flex-wrap: wrap;
+		}
+
+		#image1 {
+			float:right;
+			color: #00A0B0;
+			display: inline-block;
+			padding: 200;
+		}
+
+		#image2 {
+			color: #00A0B0;
+			display: inline-block;
+			float:left;
+			padding: 200;
+		}
+	</style>
+
+</head>
+<body>
+
+	<div class="radarChart"></div>
+
+	<script src="radarChart.js"></script> 
+	<script>
+		var selectedTeam = null;
+		var selectedPlayer1 = null;
+		var selectedPlayer2 = null;
+		var players = null;
+		var currentValue = null;
+		var ulSelect = null;
+
+		var image1 = null;
+		var image2 = null;
+
+		var svg = d3.select('body')
+		.append('div').attr("class", "cointainer")
+		.append('svg').attr({
+			class: "images",
+			width: 1500,
+			height: 150,
+		});
+
+
+		d3.json("json.json", function(error, data) {
+
+			players = data[0].elements;
+			var ul = d3.select('body')
+			.append('ul');
+
+			ul.selectAll('li')
+			.data(data[0].teams)
+			.enter()
+			.append('li')
+			.attr("id", function(d) { 
+				return d.code;
+			})
+			.attr("class", "teams")
+			.text(function(d) { 
+				return d.name;
+			})
+			.on("click", showPlayers);
+		});
+
+		var margin = { top: 150, right: 150, bottom: 150, left: 150 },
+		width = 400,
+		height = 400;
+
+		var color = d3.scale.ordinal()
+		.range(["#CC333F","#00A0B0"]);
+
+		var radarChartOptions = {
+			w: width,
+			h: height,
+			margin: margin,
+			levels: 6,
+			roundStrokes: true,
+			color: color
+		};
+
+
+      //Call function to draw the Radar chart
+      RadarChart(".radarChart", data, radarChartOptions);
+
+      function showPlayers(d) {
+      	d3.selectAll(".image").remove();
+      	d3.selectAll(".name1").remove();
+      	d3.selectAll(".name2").remove();
+      	d3.selectAll(".teams").style("color", "#FFFFFF");
+      	d3.select(this).style("color", "#34eb58");
+      	selectedTeam = this.id;
+
+      	d3.selectAll(".players").remove();
+      	d3.selectAll(".playersList").remove();
+
+      	console.log(players.filter((it) => it.teamCode.toString() === this.id.toString()));
+
+      	var ul2 = d3.select('body')
+      	.append('ul')
+      	.attr("class", "playersList");
+
+      	ul2.selectAll('li')
+      	.data(players.filter((it) => it.teamCode.toString() === this.id.toString()))
+      	.enter()  
+      	.append('li')
+      	.attr("id", function(d) { 
+      		return d.id.toString();
+      	})
+      	.attr("class", "players")
+      	.text(function(d) { 
+      		return d.web_name;
+      	})
+      	.on("click", selectPlayer);
+
+      };
+
+      function selectPlayer(d) {
+      	currentValue = currentValue
+      	? false
+      	: true;
+
+
+      	if(currentValue) {
+      		d3.selectAll(".image").remove();
+      		d3.selectAll(".name1").remove();
+      		d3.selectAll(".name2").remove();
+      		d3.selectAll(".players").style("color", "#FFFFFF");
+      		selectedPlayer2 = null
+      		selectedPlayer1 = this;
+      		d3.select(this).style("color", "red");
+      	}
+      	else {
+      		selectedPlayer2 = this;
+      		d3.select(this).style("color", "#00EEEE");
+      	}
+
+      	if(selectedPlayer1 && selectedPlayer2) {
+      		selectedPlayer1 = players.find((it) => it.id.toString() === selectedPlayer1.id);
+      		selectedPlayer2 = players.find((it) => it.id.toString() === selectedPlayer2.id);
+      		const validPlayer1 = 
+      		[
+      		{axis:"creativity",value: selectedPlayer1.creativity },
+      		{axis:"threat",value: selectedPlayer1.threat },
+      		{axis:"influence",value: selectedPlayer1.influence },
+      		];
+
+      		const validPlayer2 = [
+      		{axis:"creativity",value: selectedPlayer2.creativity },
+      		{axis:"threat",value: selectedPlayer2.threat },
+      		{axis:"influence",value: selectedPlayer2.influence },
+      		];
+
+      		d3.select('.cointainer').append("h1").attr("class", "name2").text( selectedPlayer2.firstName + " " + selectedPlayer2.secondName);
+      		d3.select('.cointainer').append("h1").attr("class", "name1").text( selectedPlayer1.firstName + " " + selectedPlayer1.secondName);
+      		image1 = svg.append('svg:image')
+      		.attr({
+      			'xlink:href': "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + selectedPlayer1.photo.toString().split(".")[0] + ".png",
+      			x: 300,
+      			y: 0,
+      			width: 110,
+      			height: 140,
+      			id: "image1",
+      			class: "image",
+      		});
+
+      		image2 = svg.append('svg:image')
+      		.text(selectedPlayer1.web_name)
+      		.attr({
+      			'xlink:href': "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + selectedPlayer2.photo.toString().split(".")[0] + ".png",
+      			x: 1200,
+      			y: 0,
+      			width: 110,
+      			height: 140,
+      			id: "image",
+      			class: "image",
+      			padding: 100,
+      		});
+
+      		RadarChart(".radarChart", [validPlayer1, validPlayer2], radarChartOptions);
+      	}
+      };
+
+  </script>
+</body>
+</html>
