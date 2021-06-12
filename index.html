@@ -4,7 +4,6 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
 	<title>FPL Radar Chart</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-
 	<style>
 		body {
 			font-size: 11px;
@@ -12,6 +11,14 @@
 			fill: #242424;
 			text-align: left;
 			cursor: default;
+		}
+
+		h1 {
+			color: #FFFFFF;
+		}
+
+		h2 {
+			color: #FFFFFF;
 		}
 
 		ul {
@@ -31,14 +38,14 @@
 			text-align:right;
 			float:right;
 			margin-left: 1200px;
-			color: #00A0B0;
+			color: red;
 			position:absolute;
 		}
 
 		.name1 {
 			text-align:right;
 			float:left;
-			color: #CC333F;
+			color: #00A0B0;
 			margin-left: 300px;
 			position:absolute;
 		}
@@ -46,13 +53,15 @@
 
 		.legend {
 			font-family: 'Raleway', sans-serif;
-			fill: #333333;
+			fill: #FFFFFF;
 			font-size: 21px;
+			text
 		}
 
 		.tooltip {
-			fill: #333333;
+			fill: #000000;
 			font-size: 21px;
+			 font-weight: bold;
 		}
 
 		.teams {
@@ -103,7 +112,7 @@
 	</style>
 
 </head>
-<body>
+<body background="bg.png">
 	<h1> FPL Radar Chart </h1>
 	<h2> Compare 2 players: </h2>
 	<div class="radarChart"></div>
@@ -154,7 +163,7 @@
 		height = 400;
 
 		var color = d3.scale.ordinal()
-		.range(["#CC333F","#00A0B0"]);
+		.range(["#00A0B0","#CC333F"]);
 
 		var radarChartOptions = {
 			w: width,
@@ -214,11 +223,11 @@
       		d3.selectAll(".players").style("color", "#FFFFFF");
       		selectedPlayer2 = null
       		selectedPlayer1 = this;
-      		d3.select(this).style("color", "red");
+      		d3.select(this).style("color", "#00EEEE");
       	}
       	else {
       		selectedPlayer2 = this;
-      		d3.select(this).style("color", "#00EEEE");
+      		d3.select(this).style("color", "red");
       	}
 
       	if(selectedPlayer1 && selectedPlayer2) {

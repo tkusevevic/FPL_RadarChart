@@ -1,10 +1,3 @@
-/////////////////////////////////////////////////////////
-/////////////// The Radar Chart Function ////////////////
-/////////////// Written by Nadieh Bremer ////////////////
-////////////////// VisualCinnamon.com ///////////////////
-/////////// Inspired by the code of alangrafu ///////////
-/////////////////////////////////////////////////////////
-  
 function RadarChart(id, data, options) {
   var cfg = {
    w: 600,        //Width of the circle
@@ -98,7 +91,7 @@ function RadarChart(id, data, options) {
      .attr("y", function(d){return -d*radius/cfg.levels;})
      .attr("dy", "0.4em")
      .style("font-size", "15px")
-     .attr("fill", "#737373")
+     .attr("fill", "#FFFFFF")
      .text(function(d,i) { return (maxValue * d/cfg.levels).toLocaleString() });
 
   /////////////////////////////////////////////////////////
@@ -214,7 +207,7 @@ function RadarChart(id, data, options) {
     .attr("r", cfg.dotRadius*1.5)
     .attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
     .attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
-    .style("fill", "none")
+    .style("fill", "#FFFFFF")
     .style("pointer-events", "all")
     .on("mouseover", function(d,i) {
       newX =  parseFloat(d3.select(this).attr('cx')) - 10;
